@@ -16,6 +16,9 @@ console.log(html);
 console.log(html2);
 console.log(html3);
 
+import "./junk.css!css";
+import "./junk2.css!css";
+
 import { Client, setDefaultClient } from "micro-graphql-react";
 
 const graphqlClient = new Client({

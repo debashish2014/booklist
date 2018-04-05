@@ -46,6 +46,13 @@ module.exports = {
                 let [path] = match.split("!text");
                 return `"html-loader!${path.replace(/\"/g, "")}"`;
               }
+            },
+            {
+              pattern: /".*\.css!css"/gi,
+              replacement: function(match, p1, offset, string) {
+                let [path] = match.split("!css");
+                return `"style-loader!css-loader!${path.replace(/\"/g, "")}"`;
+              }
             }
           ]
         })

@@ -33,6 +33,7 @@
     "babel-preset-stage-1": "6.22.0",
     "babel-preset-stage-2": "6.5.0",
     "classnames": "2.2.5",
+    "css-loader": "^0.28.11",
     "d3-array": "1.2.0",
     "d3-axis": "1.0.8",
     "d3-scale": "1.0.6",
