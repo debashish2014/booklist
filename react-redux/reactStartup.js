@@ -6,6 +6,16 @@ import ajaxUtil from "util/ajaxUtil";
 import "react-loadable";
 import "immutability-helper";
 
+import "./junkTS";
+
+const html = require("./junk.htm!text");
+import html2 from "./junk2.htm!text";
+import html3 from "./junk3.html!text";
+
+console.log(html);
+console.log(html2);
+console.log(html3);
+
 import { Client, setDefaultClient } from "micro-graphql-react";
 
 const graphqlClient = new Client({
@@ -15,7 +25,7 @@ const graphqlClient = new Client({
 
 setDefaultClient(graphqlClient);
 
-export type MutationType = { runMutation: any; dispatch: any; running: any };
+export type MutationType = { runMutation: any, dispatch: any, running: any };
 
 import {
   setDesktop,
@@ -31,7 +41,7 @@ import "util/ajaxUtil";
 import createHistory from "history/createBrowserHistory";
 
 (function() {
-  if ("serviceWorker" in navigator && !/localhost/.test(window.location as any)) {
+  if ("serviceWorker" in navigator && !/localhost/.test(window.location)) {
     navigator.serviceWorker.register("/service-worker.js");
     try {
       navigator.serviceWorker.controller.postMessage({ command: "sync-images" });
@@ -69,19 +79,12 @@ function urlBase64ToUint8Array(base64String) {
 }
 
 function sendNotification(text) {
-  if ((Notification as any).permission == "granted") {
+  if (Notification.permission == "granted") {
     new Notification(text);
   }
 }
 
 //sendNotification("Hi there");
-
-declare global {
-  interface System {
-    import(request: string): Promise<any>;
-  }
-  var System: System;
-}
 
 if ("ontouchstart" in window || "onmsgesturechange" in window) {
   store.dispatch(setIsTouch(true));
@@ -149,7 +152,7 @@ function loadModule(location) {
     var userId = getCurrentHistoryState().searchState.userId;
 
     //switching to a new public viewing - reload page
-    if (!initial && (store.getState() as any).app.publicUserId != userId) {
+    if (!initial && store.getState().app.publicUserId != userId) {
       window.location.reload();
       return;
     }
@@ -159,7 +162,7 @@ function loadModule(location) {
     if (module === "view") {
       module = "books";
     }
-  } else if ((store.getState() as any).app.publicUserId) {
+  } else if (store.getState().app.publicUserId) {
     //leaving public viewing - reload page
     window.location.reload();
     return;

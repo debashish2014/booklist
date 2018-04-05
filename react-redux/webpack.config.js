@@ -1,6 +1,7 @@
 var BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 var SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 var path = require("path");
+var StringReplacePlugin = require("string-replace-webpack-plugin");
 
 const getCache = ({ name, pattern, expires, maxEntries }) => ({
   urlPattern: pattern,
@@ -17,7 +18,7 @@ const getCache = ({ name, pattern, expires, maxEntries }) => ({
 
 module.exports = {
   entry: {
-    main: "./reactStartup.ts"
+    main: "./reactStartup.js"
   },
   output: {
     filename: "[name]-bundle.js",
@@ -35,6 +36,20 @@ module.exports = {
   mode: process.env.NODE_ENV == "production" ? "production" : "development",
   module: {
     rules: [
+      {
+        test: /\.(t|j)sx?$/,
+        loader: StringReplacePlugin.replace({
+          replacements: [
+            {
+              pattern: /".*\.html?!text"/gi,
+              replacement: function(match, p1, offset, string) {
+                let [path] = match.split("!text");
+                return `"html-loader!${path.replace(/\"/g, "")}"`;
+              }
+            }
+          ]
+        })
+      },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
@@ -57,6 +72,10 @@ module.exports = {
           presets: ["react"],
           plugins: ["transform-decorators-legacy", "transform-class-properties", "transform-object-rest-spread"]
         }
+      },
+      {
+        test: /\.htm!text$/,
+        use: { loader: "html-loader" }
       }
     ]
   },
@@ -87,6 +106,7 @@ module.exports = {
         getCache({ pattern: /^https:\/\/s3.amazonaws.com\/my-library-cover-uploads/, name: "local-images1" }),
         getCache({ pattern: /book\/loadDetails/, name: "book-details" })
       ]
-    })
+    }),
+    new StringReplacePlugin()
   ]
 };
