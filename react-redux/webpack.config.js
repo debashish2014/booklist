@@ -33,7 +33,7 @@ module.exports = {
     },
     modules: [path.resolve("./"), path.resolve("./node_modules")]
   },
-  mode: process.env.NODE_ENV == "production" ? "production" : "development",
+  mode: true || process.env.NODE_ENV == "production" ? "production" : "development",
   module: {
     rules: [
       {
