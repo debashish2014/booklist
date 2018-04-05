@@ -66,6 +66,7 @@
     "redux": "3.7.2",
     "redux-thunk": "2.2.0",
     "reselect": "2.0.1",
+    "script-loader": "^0.7.2",
     "simple-react-bootstrap": "^0.3.0-beta2",
     "string-replace-loader": "^2.1.1",
     "string-replace-webpack-plugin": "^0.1.3",

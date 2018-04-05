@@ -12,14 +12,18 @@ const html = require("./junk.htm!text");
 import html2 from "./junk2.htm!text";
 import html3 from "./junk3.html!text";
 
-console.log(html);
-console.log(html2);
-console.log(html3);
+// console.log(html);
+// console.log(html2);
+// console.log(html3);
 
 import "./junk.css!css";
 import "./junk2.css!css";
 
+import "./someScript";
+
 import { Client, setDefaultClient } from "micro-graphql-react";
+
+console.log("SCRIPT VALUE", typeof scriptGlobalVal);
 
 const graphqlClient = new Client({
   endpoint: "/graphql",

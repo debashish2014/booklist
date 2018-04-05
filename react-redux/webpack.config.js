@@ -37,6 +37,10 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /(someScript\.js$)/,
+        use: ["script-loader"]
+      },
+      {
         test: /\.(t|j)sx?$/,
         loader: StringReplacePlugin.replace({
           replacements: [
