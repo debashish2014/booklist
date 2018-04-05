@@ -1,0 +1,1 @@
+var scanVar = null;

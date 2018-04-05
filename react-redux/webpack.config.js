@@ -29,7 +29,10 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
     alias: {
-      jscolor: "util/jscolor.js"
+      jscolor: "util/jscolor.js",
+      //[path.join(__dirname, "/modules/scan/redirectScan.js")]: "modules/scan/loadEmBoth.js"
+      redirectScan: "modules/scan/loadEmBoth.js",
+      "./redirectScan": "modules/scan/loadEmBoth.js"
     },
     modules: [path.resolve("./"), path.resolve("./node_modules")]
   },
@@ -38,6 +41,9 @@ module.exports = {
     rules: [
       {
         test: /(someScript\.js$)/,
+        //test: /(someScript\.js$|finalScanScript|finalScanScriptDep)/,
+        //test: /(someScript\.js$|modules\\scan\\finalScanScript\.js$|modules\\scan\\finalScanScriptDep\.js$)/,
+        //test: /(someScript\.js$|modules\\scan\\finalScanScript\.js$|modules\\scan\\redirectScan\.js$)/,
         use: ["script-loader"]
       },
       {
