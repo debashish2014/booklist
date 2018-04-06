@@ -2,7 +2,7 @@ var BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlug
 var SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 var path = require("path");
 var StringReplacePlugin = require("string-replace-webpack-plugin");
-
+//
 const getCache = ({ name, pattern, expires, maxEntries }) => ({
   urlPattern: pattern,
   handler: "cacheFirst",

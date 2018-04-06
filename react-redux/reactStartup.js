@@ -9,15 +9,30 @@ import "immutability-helper";
 import "./junkTS";
 
 const html = require("./junk.htm!text");
-import html2 from "./junk2.htm!text";
 import html3 from "./junk3.html!text";
+
+System.import("./junk2.htm!text").then(module => {
+  console.log("imported", module);
+});
+
+System.import("./cjsModule").then(res => {
+  debugger;
+});
+
+System.import("./amdModule").then(res => {
+  debugger;
+});
 
 // console.log(html);
 // console.log(html2);
 // console.log(html3);
 
-import "./junk.css!css";
-import "./junk2.css!css";
+//import "./junk.css!css";
+//import "./junk2.css!css";
+setTimeout(() => {
+  System.import("./junk.css!css");
+  System.import("./junk2.css!css");
+}, 3000);
 
 import "./someScript";
 
