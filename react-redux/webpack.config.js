@@ -32,7 +32,9 @@ module.exports = {
       jscolor: "util/jscolor.js",
       //[path.join(__dirname, "/modules/scan/redirectScan.js")]: "modules/scan/loadEmBoth.js"
       redirectScan: "modules/scan/loadEmBoth.js",
-      "./redirectScan": "modules/scan/loadEmBoth.js"
+      "./redirectScan": "modules/scan/loadEmBoth.js",
+      "compound-name": "compoundName.js",
+      compount: "compound.js"
     },
     modules: [path.resolve("./"), path.resolve("./node_modules")]
   },
@@ -40,7 +42,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /(someScript\.js$)/,
+        test: /(someScript\.js$)|(newScript\.js$)/,
         //test: /(someScript\.js$|finalScanScript|finalScanScriptDep)/,
         //test: /(someScript\.js$|modules\\scan\\finalScanScript\.js$|modules\\scan\\finalScanScriptDep\.js$)/,
         //test: /(someScript\.js$|modules\\scan\\finalScanScript\.js$|modules\\scan\\redirectScan\.js$)/,
@@ -51,7 +53,7 @@ module.exports = {
         loader: StringReplacePlugin.replace({
           replacements: [
             {
-              pattern: /".*\.html?!text"/gi,
+              pattern: /"[^"]*?\.html?!text"/gi,
               replacement: function(match, p1, offset, string) {
                 let [path] = match.split("!text");
                 return `"html-loader!${path.replace(/\"/g, "")}"`;

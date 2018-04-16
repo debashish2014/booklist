@@ -8,6 +8,19 @@ import "immutability-helper";
 
 import "./junkTS";
 
+import compoundName from "compound-name";
+import compound from "compound";
+
+import wellSee from "./newScript";
+
+let QQQ = wellSee;
+debugger;
+
+let importedCompoundName = compoundName;
+let importedCompound = compound;
+
+//debugger;
+
 const html = require("./junk.htm!text");
 import html3 from "./junk3.html!text";
 
@@ -15,12 +28,10 @@ System.import("./junk2.htm!text").then(module => {
   console.log("imported", module);
 });
 
-System.import("./cjsModule").then(res => {
-  debugger;
-});
+import cjs from "./cjsModule";
 
 System.import("./amdModule").then(res => {
-  debugger;
+  // debugger;
 });
 
 // console.log(html);
