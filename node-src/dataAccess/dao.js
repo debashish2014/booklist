@@ -1,7 +1,9 @@
 import { MongoClient } from "mongodb";
 
 let db;
-let dbPromise = MongoClient.connect(process.env.MONGO_CONNECTION || process.env.MONGOHQ_URL)
+let dbPromise = MongoClient.connect(
+  "mongodb://guest:password@ds153779-a0.mlab.com:53779,ds153779-a1.mlab.com:53779/my-library?replicaSet=rs-ds153779"
+)
   .then(database => (db = database))
   .then(() => db)
   .catch(err => console.log("Error connecting " + err));

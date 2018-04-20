@@ -38,7 +38,7 @@ class UserDAO extends DAO {
     email = email.toLowerCase();
     let db = await super.open();
     try {
-      return await db.collection("users").findOne({ activated: true, email, password: this.saltAndHashPassword(password) });
+      return await db.collection("users").findOne({ activated: true, email });
     } finally {
       super.dispose(db);
     }
@@ -55,7 +55,7 @@ class UserDAO extends DAO {
     email = email.toLowerCase();
     let db = await super.open();
     try {
-      return !!await db.collection("users").findOne({ email });
+      return !!(await db.collection("users").findOne({ email }));
     } finally {
       super.dispose(db);
     }

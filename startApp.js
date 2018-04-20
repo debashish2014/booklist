@@ -134,7 +134,9 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(passport.authenticate("remember-me"));
 
-const dbPromise = MongoClient.connect(process.env.MONGO_CONNECTION || process.env.MONGOHQ_URL);
+const dbPromise = MongoClient.connect(
+  "mongodb://guest:password@ds153779-a0.mlab.com:53779,ds153779-a1.mlab.com:53779/my-library?replicaSet=rs-ds153779"
+);
 const root = { db: dbPromise };
 const executableSchema = makeExecutableSchema({ typeDefs: schema, resolvers });
 
