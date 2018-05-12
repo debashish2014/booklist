@@ -48,7 +48,12 @@ module.exports = {
               plugins: ["@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"]
             }
           },
-          "ts-loader"
+          {
+            loader: "ts-loader",
+            options: {
+              transpileOnly: true
+            }
+          }
         ]
       },
       {
@@ -59,6 +64,11 @@ module.exports = {
           presets: ["@babel/preset-react"],
           plugins: ["@babel/plugin-proposal-class-properties", "@babel/plugin-proposal-object-rest-spread"]
         }
+      },
+      {
+        test: /\.(graphql|gql)$/,
+        exclude: /node_modules/,
+        loader: "graphql-tag/loader"
       }
     ]
   },

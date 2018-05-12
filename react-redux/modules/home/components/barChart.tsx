@@ -12,6 +12,14 @@ import { getChildSubjectsSorted, computeSubjectParentId, RootApplicationType } f
 
 import { args, numArg, strArg, boolArg, strArrArg, gqlGet } from "util/graphqlUtil";
 
+import QUERY from "../getBooksSubjects.graphql";
+
+const X = QUERY;
+
+window.X = QUERY;
+
+debugger;
+
 function getSubjectsList(subjectIds) {
   return gqlGet(`query getBooksSubjects {
     allBooks(

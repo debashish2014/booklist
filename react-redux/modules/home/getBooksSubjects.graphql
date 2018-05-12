@@ -1,0 +1,10 @@
+query getBooksSubjects {
+    allBooks(
+        subjects_containsAny: [], 
+        searchChildSubjects: true
+    ){
+        Books {
+            subjects
+        }
+    }
+}
