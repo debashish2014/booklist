@@ -1,0 +1,1 @@
+{"query getBooksSubjects {\n  allBooks(subjects_containsAny: [\"5782d41a9e3a16dc71a3a217\"], searchChildSubjects: true) {\n    Books {\n      subjects\n    }\n  }\n}\n":1}

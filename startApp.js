@@ -34,6 +34,8 @@ import resolvers from "./node-src/graphQL/resolver";
 import schema from "./node-src/graphQL/schema";
 import { makeExecutableSchema } from "graphql-tools";
 
+import { invert } from "lodash";
+
 if (!process.env.IS_DEV) {
   app.use(function ensureSec(request, response, next) {
     let proto = request.header("x-forwarded-proto") || request.header("X-Forwarded-Proto") || request.get("X-Forwarded-Proto"),
@@ -140,6 +142,30 @@ const executableSchema = makeExecutableSchema({ typeDefs: schema, resolvers });
 
 app.use(
   "/graphql",
+  expressGraphql({
+    schema: executableSchema,
+    graphiql: true,
+    rootValue: root
+  })
+);
+
+const jsonContent = eval("(" + fs.readFileSync("react-redux/extracted_queries.json") + ")");
+const queryMap = invert(jsonContent);
+//console.log(JSON.stringify(queryMap));
+//console.log(jsonContent);
+
+app.get("/graphql2", (req, resp, next) => {
+  debugger;
+  if (req.query.query) {
+    let realQuery = queryMap[req.query.query];
+    req.query.query = realQuery;
+    req.url = req.url.replace(/query=.+/, "query=" + realQuery);
+  }
+  next();
+});
+
+app.use(
+  "/graphql2",
   expressGraphql({
     schema: executableSchema,
     graphiql: true,

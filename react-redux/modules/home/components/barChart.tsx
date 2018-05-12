@@ -14,11 +14,15 @@ import { args, numArg, strArg, boolArg, strArrArg, gqlGet } from "util/graphqlUt
 
 import QUERY from "../getBooksSubjects.graphql";
 
-const X = QUERY;
+const gqlGet2 = query => fetch(`/graphql2?query=${encodeURIComponent(query)}`, { credentials: "include" }).then(resp => resp.json());
 
-window.X = QUERY;
-
-debugger;
+gqlGet2(QUERY)
+  .then(resp => {
+    debugger;
+  })
+  .catch(err => {
+    debugger;
+  });
 
 function getSubjectsList(subjectIds) {
   return gqlGet(`query getBooksSubjects {
