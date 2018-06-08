@@ -20,6 +20,12 @@ import { MutationType } from "reactStartup";
 import { mutation } from "micro-graphql-react";
 import { EDITING_BOOK_SAVED } from "modules/books/reducers/books/actionNames";
 
+import BookGruntWork from "./bookGruntWork";
+import SubjectGruntWork from "./subjectGruntWork";
+//import { BookQueryComponent, SubjectQueryComponent } from "./cacheInvalidation1";
+//import { BookQueryComponent, SubjectQueryComponent } from "./cacheInvalidation2";
+import { BookQueryComponent, SubjectQueryComponent } from "./cacheInvalidationA";
+
 const ManualBookEntry = Loadable({
   loader: () => System.import(/* webpackChunkName: "manual-book-entry-modal" */ "applicationRoot/components/manualBookEntry"),
   loading: ComponentLoading,
@@ -100,7 +106,10 @@ export default class BookViewingList extends Component<MainSelectorType & Mutati
     editingBook: null,
     editingFilters: false,
     beginEditFilters: () => this.setState({ editingFilters: true }),
-    endEditFilters: () => this.setState({ editingFilters: false })
+    endEditFilters: () => this.setState({ editingFilters: false }),
+    page: 1,
+    pageA: 1,
+    pageB: 1
   };
   editTags = () => this.setState({ tagEditModalOpen: true });
   stopEditingTags = () => this.setState({ tagEditModalOpen: false });
@@ -162,6 +171,23 @@ export default class BookViewingList extends Component<MainSelectorType & Mutati
             beginEditFilters={beginEditFilters}
           />
           <div className="panel-body" style={{ padding: 0, minHeight: 450, position: "relative" }}>
+            <br />
+            <br />
+
+            <button onClick={() => this.setState((state, props) => ({ pageA: state.pageA - 1 }))}>A prev</button>
+            <button onClick={() => this.setState((state, props) => ({ pageA: state.pageA + 1 }))}>A next</button>
+            <button onClick={() => this.setState((state, props) => ({ pageB: state.pageB - 1 }))}>B prev</button>
+            <button onClick={() => this.setState((state, props) => ({ pageB: state.pageB + 1 }))}>B next</button>
+
+            <BookQueryComponent page={this.state.pageA} />
+            <BookGruntWork page={this.state.pageA} />
+
+            <SubjectQueryComponent page={this.state.pageA} />
+            <SubjectGruntWork page={this.state.pageA} />
+
+            <br />
+            <br />
+
             {!this.props.booksList.length && !this.props.booksLoading ? (
               <div className="alert alert-warning" style={{ borderLeftWidth: 0, borderRightWidth: 0, borderRadius: 0 }}>
                 No books found
