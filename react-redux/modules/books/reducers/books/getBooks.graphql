@@ -48,6 +48,7 @@ query SearchBooks(
       tags
       isRead
       dateAdded
+      jsonField
     }
     Meta {
       count

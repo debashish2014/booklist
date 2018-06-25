@@ -17,6 +17,7 @@ export const type = `
     isRead: Boolean
     dateAdded: String
     editorialReviews: [EditorialReview]
+    jsonField: JSON
   }
 
   type BookQueryResults {
@@ -70,6 +71,7 @@ export const type = `
     userId: String
     publisher: String
     publicationDate: String
+    jsonField: JSON
     pages: Int
     pages_INC: Int
     pages_DEC: Int
@@ -237,8 +239,7 @@ export const type = `
   }
   
 `;
-  
-  
+
 export const mutation = `
 
   createBook (
@@ -265,7 +266,6 @@ export const mutation = `
   ): Boolean
 
 `;
-
 
 export const query = `
 
@@ -401,4 +401,3 @@ export const query = `
   ): BookSingleQueryResult
 
 `;
-  

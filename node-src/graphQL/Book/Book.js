@@ -21,7 +21,9 @@ export default {
     dateAdded: "String",
     editorialReviews: {
       __isArray: true,
-      get type(){ return EditorialReview; }
+      get type() {
+        return EditorialReview;
+      }
     }
   }
 };

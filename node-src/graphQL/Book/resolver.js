@@ -9,23 +9,21 @@ export async function loadBooks(db, queryPacket, root, args, context, ast) {
   let { $match, $project, $sort, $limit, $skip } = queryPacket;
 
   let aggregateItems = [
-    { $match }, 
-    $sort ? { $sort } : null, 
+    { $match },
+    $sort ? { $sort } : null,
     { $project },
-    $skip != null ? { $skip } : null, 
+    $skip != null ? { $skip } : null,
     $limit != null ? { $limit } : null
   ].filter(item => item);
 
   await processHook(hooksObj, "Book", "queryPreAggregate", aggregateItems, root, args, context, ast);
   let Books = await dbHelpers.runQuery(db, "books", aggregateItems);
+  Books.forEach(b => (b.jsonField = { a: 12, b: "hello world" }));
   await processHook(hooksObj, "Book", "adjustResults", Books);
   return Books;
 }
 
-export const Book = {
-
-
-}
+export const Book = {};
 
 export default {
   Query: {
@@ -57,7 +55,7 @@ export default {
         result.Meta = {};
 
         if (queryPacket.metadataRequested.get("count")) {
-          let countResults = await dbHelpers.runQuery(db, "books", [{ $match: queryPacket.$match }, { $group: { _id: null, count: { $sum: 1 } } }]);  
+          let countResults = await dbHelpers.runQuery(db, "books", [{ $match: queryPacket.$match }, { $group: { _id: null, count: { $sum: 1 } } }]);
           result.Meta.count = countResults.length ? countResults[0].count : 0;
         }
       }
@@ -80,15 +78,16 @@ export default {
       return {
         success: true,
         Book: result
-      }
+      };
     },
     async updateBook(root, args, context, ast) {
+      debugger;
       let db = await root.db;
       context.__mongodb = db;
       let { $match, $project } = decontructGraphqlQuery(args._id ? { _id: args._id } : {}, ast, BookMetadata, "Book");
       let updates = await getUpdateObject(args.Updates || {}, BookMetadata, { db, dbHelpers, hooksObj, root, args, context, ast });
 
-      if (await processHook(hooksObj, "Book", "beforeUpdate", $match, updates, root, args, context, ast) === false) {
+      if ((await processHook(hooksObj, "Book", "beforeUpdate", $match, updates, root, args, context, ast)) === false) {
         return { Book: null };
       }
       if (!$match._id) {
@@ -96,7 +95,7 @@ export default {
       }
       await dbHelpers.runUpdate(db, "books", $match, updates);
       await processHook(hooksObj, "Book", "afterUpdate", $match, updates, root, args, context, ast);
-      
+
       let result = $project ? (await loadBooks(db, { $match, $project, $limit: 1 }, root, args, context, ast))[0] : null;
       return {
         Book: result,
@@ -109,12 +108,12 @@ export default {
       let { $match, $project } = decontructGraphqlQuery({ _id_in: args._ids }, ast, BookMetadata, "Books");
       let updates = await getUpdateObject(args.Updates || {}, BookMetadata, { db, dbHelpers, hooksObj, root, args, context, ast });
 
-      if (await processHook(hooksObj, "Book", "beforeUpdate", $match, updates, root, args, context, ast) === false) {
+      if ((await processHook(hooksObj, "Book", "beforeUpdate", $match, updates, root, args, context, ast)) === false) {
         return { success: true };
       }
       await dbHelpers.runUpdate(db, "books", $match, updates, { multi: true });
       await processHook(hooksObj, "Book", "afterUpdate", $match, updates, root, args, context, ast);
-      
+
       let result = $project ? await loadBooks(db, { $match, $project }, root, args, context, ast) : null;
       return {
         Books: result,
@@ -126,7 +125,7 @@ export default {
       let { $match } = decontructGraphqlQuery(args.Match, ast, BookMetadata);
       let updates = await getUpdateObject(args.Updates || {}, BookMetadata, { db, dbHelpers, hooksObj, root, args, context, ast });
 
-      if (await processHook(hooksObj, "Book", "beforeUpdate", $match, updates, root, args, context, ast) === false) {
+      if ((await processHook(hooksObj, "Book", "beforeUpdate", $match, updates, root, args, context, ast)) === false) {
         return { success: true };
       }
       await dbHelpers.runUpdate(db, "books", $match, updates, { multi: true });
@@ -140,8 +139,8 @@ export default {
       }
       let db = await root.db;
       let $match = { _id: ObjectId(args._id) };
-      
-      if (await processHook(hooksObj, "Book", "beforeDelete", $match, root, args, context, ast) === false) {
+
+      if ((await processHook(hooksObj, "Book", "beforeDelete", $match, root, args, context, ast)) === false) {
         return false;
       }
       await dbHelpers.runDelete(db, "books", $match);

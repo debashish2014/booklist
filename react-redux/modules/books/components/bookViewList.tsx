@@ -111,6 +111,9 @@ export default class BookViewingList extends Component<MainSelectorType & Mutati
     book.pages = isNaN(pages) ? void 0 : pages;
 
     let bookToUse = propsToUpdate.reduce((obj, prop) => ((obj[prop] = book[prop]), obj), {});
+    (bookToUse as any).jsonField = { x: 99, color: "red" };
+    debugger;
+    debugger;
     Promise.resolve(this.props.runMutation({ _id: book._id, book: bookToUse })).then(resp => {
       this.setState({
         isEditingBook: false,

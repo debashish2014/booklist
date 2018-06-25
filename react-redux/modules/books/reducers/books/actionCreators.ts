@@ -103,6 +103,7 @@ function booksSearch(bookSearchState: BookSearchType, publicUserId) {
 
   return graphqlClient.runQuery(GetBooksQuery, getBooksVariables).then(resp => {
     if (resp.data && resp.data.allBooks && resp.data.allBooks.Books && resp.data.allBooks.Meta) {
+      debugger;
       return { results: resp.data.allBooks.Books, count: resp.data.allBooks.Meta.count };
     }
   });
