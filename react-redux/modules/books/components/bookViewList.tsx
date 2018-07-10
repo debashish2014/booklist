@@ -1,183 +1,86 @@
-import { BooksModuleType, AppType, BookSearchType, TagsType } from "modules/books/reducers/reducer";
-
 import React, { Component } from "react";
-import { connect } from "react-redux";
-import { createSelector } from "reselect";
 
-import DBR from "./displayBookResults";
-const DisplayBookResults: any = DBR;
-
-import BMB from "./booksMenuBar";
-const BooksMenuBar: any = BMB;
-
-import BooksLoading from "./booksLoading";
-import Loadable from "react-loadable";
-
-import { BookListType, selectBookList, selectBookSelection, BookSelectionType } from "../reducers/books/reducer";
-import ComponentLoading from "applicationRoot/components/componentLoading";
-
-import { MutationType } from "reactStartup";
-import { mutation } from "micro-graphql-react";
-import { EDITING_BOOK_SAVED } from "modules/books/reducers/books/actionNames";
-
-import UpdateBookMutation from "./updateBook.graphql";
-
-const ManualBookEntry = Loadable({
-  loader: () => System.import(/* webpackChunkName: "manual-book-entry-modal" */ "applicationRoot/components/manualBookEntry"),
-  loading: ComponentLoading,
-  delay: 200
-});
-
-const BookSubjectSetter = Loadable({
-  loader: () => System.import(/* webpackChunkName: "book-list-modals" */ "./bookSubjectSetter"),
-  loading: ComponentLoading,
-  delay: 200
-});
-
-const BookTagSetter = Loadable({
-  loader: () => System.import(/* webpackChunkName: "book-list-modals" */ "./bookTagSetter"),
-  loading: ComponentLoading,
-  delay: 200
-});
-
-const SubjectEditModal = Loadable({
-  loader: () => System.import(/* webpackChunkName: "book-list-modals" */ "./subjectEditModal"),
-  loading: ComponentLoading,
-  delay: 200
-});
-
-const TagEditModal = Loadable({
-  loader: () => System.import(/* webpackChunkName: "book-list-modals" */ "./tagEditModal"),
-  loading: ComponentLoading,
-  delay: 200
-});
-
-const BookSearchModal = Loadable({
-  loader: () => System.import(/* webpackChunkName: "book-list-modals" */ "./bookSearchModal"),
-  loading: ComponentLoading,
-  delay: 200
-});
-
-type MainSelectorType = BookListType & BookSelectionType;
-
-const mainSelector = createSelector<BooksModuleType, MainSelectorType, BookListType, BookSelectionType>(
-  selectBookList,
-  selectBookSelection,
-  (books, bookSelection) => {
-    return {
-      ...books,
-      ...bookSelection
-    };
+const LOAD_BOOKS = `query getAllBooks($title:String) {
+  allBooks(title_contains:$title){
+    Books{
+      _id,
+      title
+    }
   }
-);
+}`;
 
-@mutation(UpdateBookMutation)
-@connect(mainSelector)
-export default class BookViewingList extends Component<MainSelectorType & MutationType & { dispatch: any }, any> {
-  state = {
-    navBarHeight: null,
-    tagEditModalOpen: false,
-    subjectEditModalOpen: false,
-    booksSubjectModifying: null,
-    booksTagModifying: null,
-    isEditingBook: false,
-    editingBook: null,
-    editingFilters: false,
-    beginEditFilters: () => this.setState({ editingFilters: true }),
-    endEditFilters: () => this.setState({ editingFilters: false })
-  };
-  editTags = () => this.setState({ tagEditModalOpen: true });
-  stopEditingTags = () => this.setState({ tagEditModalOpen: false });
-  editSubjects = () => this.setState({ subjectEditModalOpen: true });
-  stopEditingSubjects = () => this.setState({ subjectEditModalOpen: false });
+const UPDATE_BOOK = `mutation updateBook($_id: String, $title:String) {
+  updateBook(_id: $_id, Updates: { title: $title }){
+    Book{ _id, title }
+  }
+}`;
 
-  editSubjectsForBook = book => this.setState({ booksSubjectModifying: [book] });
-  editSubjectsForSelectedBooks = () => this.setState({ booksSubjectModifying: this.props.booksList.filter(b => this.props.selectedBookHash[b._id]) });
-  doneEditingBooksSubjects = () => this.setState({ booksSubjectModifying: null });
+class DisplayBooks extends Component<any, any> {
+  render() {
+    let { books, editBook } = this.props;
+    return (
+      <ul>
+        {books.map(book => (
+          <li>
+            <span>
+              {book.title} <button onClick={() => editBook(book)}>edit</button>
+            </span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+}
 
-  editTagsForBook = book => this.setState({ booksTagModifying: [book] });
-  editTagsForSelectedBooks = () => this.setState({ booksTagModifying: this.props.booksList.filter(b => this.props.selectedBookHash[b._id]) });
-  doneEditingBooksTags = () => this.setState({ booksTagModifying: null });
+class UpdateBook extends Component<any, any> {
+  el: any;
+  render() {
+    let { book, updateBook } = this.props;
+    return (
+      <div>
+        <input ref={el => (this.el = el)} defaultValue={book.title} />
+        <button onClick={() => updateBook({ _id: book._id, title: this.el.value })}>Save</button>
+      </div>
+    );
+  }
+}
 
-  editBook = book =>
-    this.setState({
-      isEditingBook: true,
-      editingBook: book
-    });
-  stopEditingBook = () => this.setState({ isEditingBook: false });
-  saveEditingBook = book => {
-    let propsToUpdate = ["title", "isbn", "smallImage", "pages", "publisher", "publicationDate", "authors"];
-    let pages = parseInt(book.pages, 10);
-    book.pages = isNaN(pages) ? void 0 : pages;
+const hardResetStrategy = name => ({
+  when: new RegExp(`(update|create|delete)${name}s?`),
+  run: (args, resp, { hardReset }) => hardReset()
+});
 
-    let bookToUse = propsToUpdate.reduce((obj, prop) => ((obj[prop] = book[prop]), obj), {});
-    Promise.resolve(this.props.runMutation({ _id: book._id, book: bookToUse })).then(resp => {
-      this.setState({
-        isEditingBook: false,
-        editingBook: null
-      });
-      this.props.dispatch({ type: EDITING_BOOK_SAVED, book: resp.updateBook.Book });
-    });
-  };
+import { GraphQL, buildQuery, buildMutation } from "micro-graphql-react";
 
-  navBarSized = contentRect => {
-    this.setState({ navBarHeight: contentRect.client.height });
+export default class BookViewingList extends Component<any, any> {
+  state = { titleSearch: "", editingBook: null };
+  el: any;
+  editBook = book => {
+    this.setState({ editingBook: book });
   };
   render() {
-    let editingBook = this.state.editingBook,
-      dragTitle = editingBook
-        ? `Click or drag to upload a ${editingBook.smallImage ? "new" : ""} cover image.  The uploaded image will be scaled down as needed`
-        : "";
-
-    let { state, editBook, editTagsForBook, editSubjectsForBook } = this;
-    let { isEditingBook, navBarHeight, editingFilters, beginEditFilters, endEditFilters } = state;
-    let { subjectEditModalOpen, booksSubjectModifying, booksTagModifying, tagEditModalOpen } = state;
-
     return (
-      <div style={{ position: "relative" }}>
-        <BooksLoading />
-        <div className="panel panel-default" style={{ margin: "10px" }}>
-          <BooksMenuBar
-            startTagModification={this.editTagsForSelectedBooks}
-            startSubjectModification={this.editSubjectsForSelectedBooks}
-            editTags={this.editTags}
-            editSubjects={this.editSubjects}
-            navBarSized={this.navBarSized}
-            beginEditFilters={beginEditFilters}
-          />
-          <div className="panel-body" style={{ padding: 0, minHeight: 450, position: "relative" }}>
-            {!this.props.booksList.length && !this.props.booksLoading ? (
-              <div className="alert alert-warning" style={{ borderLeftWidth: 0, borderRightWidth: 0, borderRadius: 0 }}>
-                No books found
-              </div>
-            ) : null}
-
-            <DisplayBookResults {...{ editBook, editTagsForBook, editSubjectsForBook }} navBarHeight={navBarHeight} />
-
-            {isEditingBook ? (
-              <ManualBookEntry
-                title={editingBook ? `Edit ${editingBook.title}` : ""}
-                dragTitle={dragTitle}
-                bookToEdit={editingBook}
-                isOpen={isEditingBook}
-                isSaving={this.props.running}
-                isSaved={false}
-                saveBook={this.saveEditingBook}
-                saveMessage={"Saved"}
-                onClosing={this.stopEditingBook}
-              />
-            ) : null}
-          </div>
-        </div>
+      <div style={{ padding: "30px" }}>
+        <input ref={el => (this.el = el)} />
+        <button onClick={() => this.setState({ titleSearch: this.el.value })}>Update</button>
         <br />
         <br />
 
-        {booksSubjectModifying ? <BookSubjectSetter modifyingBooks={booksSubjectModifying} onDone={this.doneEditingBooksSubjects} /> : null}
-        {booksTagModifying ? <BookTagSetter modifyingBooks={booksTagModifying} onDone={this.doneEditingBooksTags} /> : null}
-
-        {subjectEditModalOpen ? <SubjectEditModal editModalOpen={subjectEditModalOpen} stopEditing={this.stopEditingSubjects} /> : null}
-        {tagEditModalOpen ? <TagEditModal editModalOpen={tagEditModalOpen} onDone={this.stopEditingTags} /> : null}
-        {editingFilters ? <BookSearchModal isOpen={editingFilters} onHide={endEditFilters} /> : null}
+        <GraphQL
+          query={{
+            loadBooks: buildQuery(LOAD_BOOKS, { title: this.state.titleSearch }, { onMutation: hardResetStrategy("Book") })
+          }}
+          mutation={{ updateBook: buildMutation(UPDATE_BOOK) }}
+        >
+          {({ loadBooks: { loading, loaded, data, error }, updateBook: { runMutation } }) => (
+            <div>
+              {loading ? <span>Loading...</span> : null}
+              {loaded && data && data.allBooks ? <DisplayBooks books={data.allBooks.Books} editBook={this.editBook} /> : null}
+              <br />
+              {this.state.editingBook ? <UpdateBook book={this.state.editingBook} updateBook={runMutation} /> : null}
+            </div>
+          )}
+        </GraphQL>
       </div>
     );
   }
