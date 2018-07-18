@@ -54,6 +54,10 @@ import { Client, setDefaultClient, GraphQL, buildQuery, buildMutation, compress,
 
 let c = new Cache(1);
 
+const testTypings = () => {
+  return <GraphQL query={{ x: buildQuery("", { sd: 12, e: "fdf" }, { onMutation: {when: /dfsd/, run: () => {}} } ) }} />;
+};
+
 const graphqlClient = new Client({
   endpoint: "/graphql",
   fetchOptions: { credentials: "include" },
