@@ -38,7 +38,7 @@ class UpdateBook extends Component<any, any> {
     let { book, updateBook } = this.props;
     return (
       <div>
-        <input ref={el => (this.el = el)} defaultValue={book.title} />
+        <input style={{ width: "300px" }} ref={el => (this.el = el)} defaultValue={book.title} />
         <button onClick={() => updateBook({ _id: book._id, title: this.el.value })}>Save</button>
       </div>
     );
@@ -47,16 +47,10 @@ class UpdateBook extends Component<any, any> {
 
 const hardResetStrategy = name => ({
   when: new RegExp(`(update|create|delete)${name}s?`),
-  run: (args, resp, { hardReset }) => hardReset()
+  run: ({ hardReset }) => hardReset()
 });
 
-import { Client, setDefaultClient, GraphQL, buildQuery, buildMutation, compress, Cache } from "micro-graphql-react";
-
-let c = new Cache(1);
-
-const testTypings = () => {
-  return <GraphQL query={{ x: buildQuery("", { sd: 12, e: "fdf" }, { onMutation: {when: /dfsd/, run: () => {}} } ) }} />;
-};
+import { Client, setDefaultClient, GraphQL, buildQuery, buildMutation, compress, Cache, query } from "micro-graphql-react";
 
 const graphqlClient = new Client({
   endpoint: "/graphql",
@@ -65,6 +59,16 @@ const graphqlClient = new Client({
 });
 
 setDefaultClient(graphqlClient);
+
+@query(LOAD_BOOKS, (props: any) => ({ title: props.title, page: props.page }), {
+  onMutation: { when: /(update|create|delete)Books?/, run: ({ hardReset }) => hardReset() }
+})
+export class BookQueryComponent extends Component<any, any> {
+  render() {
+    let { data } = this.props;
+    return <div>{data ? <ul>{data.allBooks.Books.map(b => <li key={b._id}>{b.title}</li>)}</ul> : null}</div>;
+  }
+}
 
 export default class BookViewingList extends Component<any, any> {
   state = { titleSearch: "", page: 1, editingBook: null };
@@ -85,7 +89,7 @@ export default class BookViewingList extends Component<any, any> {
 
         <GraphQL
           query={{
-            loadBooks: buildQuery(LOAD_BOOKS, { title: titleSearch, page }, { onMutation: hardResetStrategy("Book"), cache: c })
+            loadBooks: buildQuery(LOAD_BOOKS, { title: titleSearch, page }, { onMutation: hardResetStrategy("Book") })
           }}
           mutation={{ updateBook: buildMutation(UPDATE_BOOK) }}
         >
@@ -98,6 +102,8 @@ export default class BookViewingList extends Component<any, any> {
             </div>
           )}
         </GraphQL>
+
+        <BookQueryComponent title={titleSearch} page={page} />
       </div>
     );
   }
