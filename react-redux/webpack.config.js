@@ -80,35 +80,35 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({ template: "default.htm" }),
-    new GenerateSW({
-      clientsClaim: true,
-      skipWaiting: true,
-      globDirectory: ".",
-      globPatterns: [
-        "static/bootstrap/css/bootstrap-booklist-build.css",
-        "static/fontawesome/css/font-awesome-booklist-build.css",
-        "static/fontawesome/fonts/fontawesome-webfont.woff2",
-        "static/main-icon2.png",
-        "offline.htm",
-        "node_modules/simple-react-bootstrap/simple-react-bootstrap-styles.css"
-      ],
-      globIgnores: [],
-      modifyUrlPrefix: {
-        "static/": "react-redux/static/",
-        "util/": "react-redux/util/",
-        "offline.htm": "react-redux/offline.htm",
-        "node_modules/": "react-redux/node_modules/"
-      },
-      ignoreUrlParametersMatching: [/./],
-      runtimeCaching: [
-        getCache({ pattern: /^https:\/\/mylibrary\.io\/graphql\?query=.+bookSearchVersion/, name: "book-search-graphql", expires: 60 * 5 }), //5 minutes
-        getCache({ pattern: /^https:\/\/mylibrary\.io\/graphql\?query=.+isBookDetails/, name: "book-details" }),
-        getCache({ pattern: /^https:\/\/images-na.ssl-images-amazon.com/, name: "amazon-images1" }),
-        getCache({ pattern: /^https:\/\/ecx.images-amazon.com/, name: "amazon-images2" }),
-        getCache({ pattern: /^https:\/\/s3.amazonaws.com\/my-library-cover-uploads/, name: "local-images1" })
-      ],
-      importScripts: ["react-redux/sw-manual.js"]
-    }),
+    // new GenerateSW({
+    //   clientsClaim: true,
+    //   skipWaiting: true,
+    //   globDirectory: ".",
+    //   globPatterns: [
+    //     "static/bootstrap/css/bootstrap-booklist-build.css",
+    //     "static/fontawesome/css/font-awesome-booklist-build.css",
+    //     "static/fontawesome/fonts/fontawesome-webfont.woff2",
+    //     "static/main-icon2.png",
+    //     "offline.htm",
+    //     "node_modules/simple-react-bootstrap/simple-react-bootstrap-styles.css"
+    //   ],
+    //   globIgnores: [],
+    //   modifyUrlPrefix: {
+    //     "static/": "react-redux/static/",
+    //     "util/": "react-redux/util/",
+    //     "offline.htm": "react-redux/offline.htm",
+    //     "node_modules/": "react-redux/node_modules/"
+    //   },
+    //   ignoreUrlParametersMatching: [/./],
+    //   runtimeCaching: [
+    //     getCache({ pattern: /^https:\/\/mylibrary\.io\/graphql\?query=.+bookSearchVersion/, name: "book-search-graphql", expires: 60 * 5 }), //5 minutes
+    //     getCache({ pattern: /^https:\/\/mylibrary\.io\/graphql\?query=.+isBookDetails/, name: "book-details" }),
+    //     getCache({ pattern: /^https:\/\/images-na.ssl-images-amazon.com/, name: "amazon-images1" }),
+    //     getCache({ pattern: /^https:\/\/ecx.images-amazon.com/, name: "amazon-images2" }),
+    //     getCache({ pattern: /^https:\/\/s3.amazonaws.com\/my-library-cover-uploads/, name: "local-images1" })
+    //   ],
+    //   importScripts: ["react-redux/sw-manual.js"]
+    // }),
     //new BundleAnalyzerPlugin({ analyzerMode: "static" }),
     isProd ? new MinifyPlugin() : null
   ].filter(p => p)
