@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { render } from "react-dom";
 
-import { withStyles } from "@material-ui/core/styles";
+//import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import IconButton from "@material-ui/core/IconButton";
@@ -24,6 +24,7 @@ const styles = theme => ({
   menuButton: {
     marginLeft: -12,
     marginRight: 20,
+    backgroundColor: "pink",
     [theme.breakpoints.up("md")]: {
       display: "none"
     }
@@ -35,22 +36,18 @@ const styles = theme => ({
   }
 });
 
-class MainAppBar extends Component {
+export default class MainAppBar extends Component {
   state = { expanded: false };
   toggle = () => this.setState({ expanded: !this.state.expanded });
   render() {
-    let { classes } = this.props;
-
     return (
-      <div className={classes.root}>
+      <div>
         <AppBar position="static">
           <Toolbar>
-            <IconButton onClick={this.toggle} className={classes.menuButton} color="inherit">
+            <IconButton onClick={this.toggle} color="inherit">
               <MenuIcon />
             </IconButton>
-            <Typography className={classes.largeContent} color="inherit">
-              Large
-            </Typography>
+            <Typography color="inherit">Large</Typography>
           </Toolbar>
           <Collapse in={this.state.expanded}>
             <div style={{ backgroundColor: "white", color: "black" }}>
@@ -72,4 +69,4 @@ class MainAppBar extends Component {
   }
 }
 
-export default withStyles(styles)(MainAppBar);
+//export default withStyles(styles)(MainAppBar);

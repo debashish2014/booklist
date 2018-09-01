@@ -6,6 +6,8 @@ import { render } from "react-dom";
 import { requestDesktop, requestMobile } from "./rootReducerActionCreators";
 import MainNavigationBar from "applicationRoot/components/mainNavigation";
 
+import AppBar from "../appBar";
+
 const MobileMeta = connect(
   state => state.app,
   {}
@@ -41,6 +43,16 @@ export function renderUI(component) {
   render(
     <Provider store={store as any}>
       <div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <AppBar />
+        <br />
+        <br />
+        <br />
+        <br />
+
         <MobileMeta />
         <MainNavigationBar />
         <div style={{ marginTop: 60 }}>{component}</div>
