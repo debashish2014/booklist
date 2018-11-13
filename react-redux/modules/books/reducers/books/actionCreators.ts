@@ -89,6 +89,7 @@ function booksSearch(bookSearchState: BookSearchType, publicUserId) {
 }
 
 export function expandBook(_id: string) {
+  throw new Promise(res => setTimeout(res, 2000));
   return (dispatch, getState: () => BooksModuleType) => {
     let allState = getState();
     let publicUserId = allState.app.publicUserId;

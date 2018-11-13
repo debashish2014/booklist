@@ -1,4 +1,4 @@
-import React, { SFC, CSSProperties } from "react";
+import React, { SFC, Suspense, CSSProperties } from "react";
 const { useState, useMemo } = React as any;
 import { connect } from "react-redux";
 
@@ -17,6 +17,43 @@ interface ILocalProps {
   selectedBooks: any;
   editBook: any;
 }
+
+const DetailsSpinner = book => (
+  <a target="_new" className="margin-right grid-hover-filter inline-filter">
+    <i style={{ display: book.pendingDelete ? "inline" : "" }} className="fa fa-fw fa-spin fa-spinner" />
+  </a>
+);
+
+let val = 0;
+const dummyCache = {
+  read(id) {
+    if (!this[id]) {
+      throw new Promise(res =>
+        setTimeout(() => {
+          res(++val);
+          this[id] = val;
+        }, 2000)
+      );
+    } else {
+      return this[id];
+    }
+  }
+};
+
+const LoadingButton = props => {
+  let { book } = props;
+  //let THIS_THROWS = dummyCache.read(book._id);
+
+  return book.expanded ? (
+    <a target="_new" onClick={() => props.collapseBook(book._id)} className="margin-right grid-hover-filter inline-filter">
+      <i style={{ display: book.pendingDelete ? "inline" : "" }} className="far fa-minus show-on-hover-parent-td" />
+    </a>
+  ) : (
+    <a target="_new" onClick={() => dummyCache.read(book._id)} className="margin-right grid-hover-filter inline-filter">
+      <i style={{ display: book.pendingDelete ? "inline" : "" }} className="far fa-plus show-on-hover-parent-td" />
+    </a>
+  );
+};
 
 const BookRowRaw: SFC<ILocalProps & actionsType> = props => {
   let { book, index, viewingPublic } = props;
@@ -40,19 +77,9 @@ const BookRowRaw: SFC<ILocalProps & actionsType> = props => {
         <div style={{ fontWeight: "bold" }}>{book.title}</div>
         {book.authors ? <div style={{ fontStyle: "italic" }}>{book.authors.join(", ")}</div> : null}
 
-        {book.detailsLoading ? (
-          <a target="_new" className="margin-right grid-hover-filter inline-filter">
-            <i style={{ display: book.pendingDelete ? "inline" : "" }} className="fa fa-fw fa-spin fa-spinner" />
-          </a>
-        ) : book.expanded ? (
-          <a target="_new" onClick={() => props.collapseBook(book._id)} className="margin-right grid-hover-filter inline-filter">
-            <i style={{ display: book.pendingDelete ? "inline" : "" }} className="far fa-minus show-on-hover-parent-td" />
-          </a>
-        ) : (
-          <a target="_new" onClick={() => props.expandBook(book._id)} className="margin-right grid-hover-filter inline-filter">
-            <i style={{ display: book.pendingDelete ? "inline" : "" }} className="far fa-plus show-on-hover-parent-td" />
-          </a>
-        )}
+        <Suspense fallback={<DetailsSpinner book={book} />}>
+          <LoadingButton {...props} />
+        </Suspense>
         {book.isbn ? (
           <a
             target="_new"
